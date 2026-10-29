@@ -9,7 +9,7 @@ import robocode.util.Utils;
 /**
  * DittoIsso - Um Robô dos YingYang
  */
-public class DittoIsso extends AdvencedRobot
+public class DittoIsso extends AdvancedRobot
 {
 	/**
 	 * run: DittoIsso's default behavior
@@ -23,11 +23,9 @@ public class DittoIsso extends AdvencedRobot
 			setAhead(150); // Comando "ahead" ele anda a quantidade de px determinada
 						// para onde o carro está apontando.
 			setTurnRight(45); // Comando que gira o robo 45 graus para a direita.
-			setTurnRadarRight(90); // Gira o radar 90 graus
-			setBack(10); // Comando que anda para a direçao contraria de onde o carro
-					  // está virado. 
-			setTurnLeft(90); // Comando que gira o robo 90 graus pra esquerda
 			setTurnRadarRight(360); // Gira o radar 270 graus
+			
+			execute();
 		}
 	}
 	
@@ -50,7 +48,12 @@ public class DittoIsso extends AdvencedRobot
 															  // getBearing e quantos graus o inimigo esta do seu corpo
 															  // A diferencia dos dois mostra onde o inimigo esta.
 						
-		double giro = anguloInimigo - getGunHeading(); // getGunHeading e onde a arma esta apontando.
+		double giro = Utils.normalRelativeAngleDegrees(
+					anguloInimigo - getGunHeading()
+					);
+														// Utils.normalRelativeAngleDegrees() te dá o menor caminho para inimigo,
+														// se positivo: gira pra direita. Se negativo, gira pra esquerda, se zero, já está na posição certa
+														// getGunHeading e onde a arma esta apontando.
 													   // a diferencia de onde o inimigo esta para onde a arma esta apontando e onde vc deve atirar.
 													   // EXEMPLO: se o inimigo esta a 40 graus, e minha arma esta a 70 graus, diminuindo 30 graus, eu miro nele.
 		
