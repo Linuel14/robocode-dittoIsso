@@ -27,6 +27,9 @@ public class DittoIsso extends AdvancedRobot
 		setAdjustRadarForRobotTurn(true); // Desassocia movimento do radar do movimento do tanque.
 
 		while (true) {
+			if (evitandoParede) {
+				naoPodeParede(); // Se estiver evitando parede, executa não pode parede, para sair de lá.
+			}
 		
 			// Verifica se o robô está escapando de uma parede
            // e se os comandos de movimento e rotação terminaram.
@@ -38,6 +41,22 @@ public class DittoIsso extends AdvancedRobot
 
 			setTurnRadarRight(360); // Gira o radar 360 graus
 			execute();				  // Executa os comandos agendados pelo AdvancedRobot.
+		}
+	}
+
+	public boolean pertoParede() {
+			double margemParede = 20; // Margem de segurança
+
+			return getX() < margemParede || // Se estiver muito para esquerda
+				   getX() > getBattleFieldWidth() -  margemParede || // Se estiver muito para direita
+				   getY() < margemParede || // Se estiver muito para baixo
+        		   getY() > getBattleFieldHeight() - margemParede; // se estiver muito pra cima
+	}
+
+	public void naoPodeParede() {
+		if (pertoParede()){
+			setTurnRight(45);
+			setAhead(110);
 		}
 	}
 	
@@ -57,9 +76,13 @@ public class DittoIsso extends AdvancedRobot
 	
 	public void onScannedRobot(ScannedRobotEvent e) { // "onScannedRobot" = ações para quando escanear o robô inimgo.
 																  
-		if (evitandoParede) {// Se o robô estiver executando uma manobra de fuga,
+		/*if (evitandoParede) {// Se o robô estiver executando uma manobra de fuga,
     		return;	          // interrompe este método para não interferir nos comandos.
-		}
+		}*/
+
+		if (pertoParede()) {
+			evitandoParede = true;
+		} // Se estiver perto da parede, vai evitar parede.
 		
 		double anguloInimigo = getHeading() + e.getBearing(); // Aqui, serve pra descobrir onde o inimigo esta.
 															  // getHeading pega onde voce esta olhando.
@@ -103,13 +126,22 @@ public class DittoIsso extends AdvancedRobot
                              // para a qual o tanque está apontando.
 		
 		setTurnGunRight(giroArma); // Gira a arma em direçao do inimigo
-		
 
-		if (getGunHeat() == 0 && e.getDistance() < 400) {// Verifica se a arma está resfriada e pronta para disparar
-		    setFire(1);        // e se o adversário está a menos de 400 pixels de distância. e atira com força 1
+		if (Math.abs(giroArma) < 5 && getGunHeat() == 0) { // Trava a mira da arma e atira caso a arma esteja com erro de 5 graus
+			setFire(1);
 		}
 		
 
+		if (getGunHeat() == 0) { // Se poder atirar
+   			if (e.getDistance() < 150) {
+				setFire(3); // Distancia menor que 150, força do tiro 3
+		 	}
+			else if (e.getDistance() < 300) {
+				setFire(2); // Distancia maior que 150 e menor que 300, força do tiro dois
+			}
+			else {
+				setFire(1); // Distancia maior que 300, força do tiro 1
+			}
+		}
 	}
 }
-
