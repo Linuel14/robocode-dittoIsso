@@ -20,10 +20,7 @@ public class DittoIsso extends AdvancedRobot
 		setAdjustRadarForRobotTurn(true); // Desassocia movimento do radar do movimento do tanque.
 
 		while (true) {
-			setAhead(150); // Comando "ahead" ele anda a quantidade de px determinada
-						// para onde o carro está apontando.
-			setTurnRight(45); // Comando que gira o robo 45 graus para a direita.
-			setTurnRadarRight(360); // Gira o radar 270 graus
+			setTurnRadarRight(360); // Gira o radar 360 graus
 			
 			execute();
 		}
@@ -48,7 +45,14 @@ public class DittoIsso extends AdvancedRobot
 															  // getBearing e quantos graus o inimigo esta do seu corpo
 															  // A diferencia dos dois mostra onde o inimigo esta.
 						
-		double giro = Utils.normalRelativeAngleDegrees(
+		double direcaoMovimento = anguloInimigo + 90;
+		
+		double giroTanque = Utils.normalRelativeAngleDegrees(
+					direcaoMovimento - getHeading()
+					);
+
+
+		double giroArma = Utils.normalRelativeAngleDegrees(
 					anguloInimigo - getGunHeading()
 					);
 														// Utils.normalRelativeAngleDegrees() te dá o menor caminho para inimigo,
@@ -57,8 +61,11 @@ public class DittoIsso extends AdvancedRobot
 													   // a diferencia de onde o inimigo esta para onde a arma esta apontando e onde vc deve atirar.
 													   // EXEMPLO: se o inimigo esta a 40 graus, e minha arma esta a 70 graus, diminuindo 30 graus, eu miro nele.
 		
-		setTurnGunRight(giro); // Gira a arma em direçao do inimigo
+
+		setTurnRight(giroTanque);
+		setAhead(150);
 		
+		setTurnGunRight(giroArma); // Gira a arma em direçao do inimigo
 		setFire(2); // atira na potencia 2, oq siginifica que o tiro tem forca media, alcance medio e nao tira tanta energia sua.
 		
 		if (e.getDistance() < 400) { // "e.getDistance" = distancia em px em relação ao robo inimigo.
